@@ -1,0 +1,27 @@
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  var socket = io();
+    function send()
+    {
+        const content  = document.getElementById('message-box').value
+        const name  = document.getElementById('name-box').value
+
+        if(content === '' || content === null || content === undefined || name === '' || name === null || name === undefined) return
+
+        const message = {name, content}
+        socket.emit('message', message)
+        document.getElementById('message-box').value = ''
+    }
+
+    socket.on('msg', (msg) => {
+      document.getElementById('message-container').innerHTML = document.getElementById('message-container').innerHTML + `<div><p><strong>${msg.name}</strong>: ${msg.content}</p></div>`
+    })
+</script>
+<p>Name: </p><input id="name-box" value="">
+
+<div id="message-container">
+    
+</div>
+<p>Message: </p><input id="message-box" value="">
+<button id="send" onClick="send()">Send</button>
