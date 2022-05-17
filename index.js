@@ -1,23 +1,46 @@
 const express = require('express');
 const app = express();
 const http = require('http');
+const { SocketAddress } = require('net');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+
+var activeUsers = 0;
+
+const port = 3000
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
+const messages = []
+
+function printUserCount() {console.log(`There are ${activeUsers} user(s) online.`)}
+
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log('A user connected');
+  activeUsers++
+
+  printUserCount()
+
+  messages.forEach(m => socket.emit('message', m))
+
   socket.on('message', (msg) => {
-    io.emit('msg', msg)
+    messages.push(msg)
+    io.emit('message', msg)
     })
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+    activeUsers--
+
+    printUserCount()
+  })
 });
 
 
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
+server.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });

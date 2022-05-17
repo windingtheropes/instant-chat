@@ -1,27 +1,53 @@
 <script src="/socket.io/socket.io.js"></script>
 
+<style>
+  div.scroll {
+      margin:4px, 4px;
+      padding:4px;
+      width: 500px;
+      height: 110px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      text-align:justify;
+  }
+</style>
+
 <script>
   var socket = io();
-    function send()
-    {
-        const content  = document.getElementById('message-box').value
-        const name  = document.getElementById('name-box').value
 
-        if(content === '' || content === null || content === undefined || name === '' || name === null || name === undefined) return
+  function send() {
+    const content = document.getElementById('message-box').value.trim()
+    const name = document.getElementById('name-box').value.trim()
 
-        const message = {name, content}
-        socket.emit('message', message)
-        document.getElementById('message-box').value = ''
-    }
+    if (content === '' || content === null || content === undefined || name === '' || name === null || name === undefined) return
 
-    socket.on('msg', (msg) => {
-      document.getElementById('message-container').innerHTML = document.getElementById('message-container').innerHTML + `<div><p><strong>${msg.name}</strong>: ${msg.content}</p></div>`
-    })
+    const message = { name, content }
+
+    socket.emit('message', message)
+    document.getElementById('message-box').value = ''
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+        document.getElementById("message-box").addEventListener("keypress", function(event){
+            if(event.keyCode == 13){
+                send()
+            }
+        });
+    });
+
+  socket.on('message', (msg) => {
+    document.getElementById('message-container').innerHTML = document.getElementById('message-container').innerHTML + `<div><p><strong>${msg.name}</strong>: ${msg.content}</p></div>`
+    
+    var messageContainer = document.getElementById("message-container");
+
+    messageContainer.scrollTop = messageContainer.scrollHeight
+
+  })
 </script>
 <p>Name: </p><input id="name-box" value="">
 
-<div id="message-container">
-    
+<div class="scroll" id="message-container">
+
 </div>
 <p>Message: </p><input id="message-box" value="">
-<button id="send" onClick="send()">Send</button>
+<button id="send-button" onClick="send()">Send</button>
