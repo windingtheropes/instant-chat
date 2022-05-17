@@ -43,6 +43,10 @@
     messageContainer.scrollTop = messageContainer.scrollHeight
 
   })
+
+  socket.on('reload', () => {
+    location.reload()
+  })
 </script>
 <p>Name: </p><input id="name-box" value="">
 

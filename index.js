@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-const messages = []
+var messages = []
 
 function printUserCount() {console.log(`There are ${activeUsers} user(s) online.`)}
 
@@ -27,6 +27,12 @@ io.on('connection', (socket) => {
   messages.forEach(m => socket.emit('message', m))
 
   socket.on('message', (msg) => {
+    if(msg.content.toLowerCase() === '/clear')
+    { 
+      messages = []
+      io.emit('reload')
+    }
+
     messages.push(msg)
     io.emit('message', msg)
     })
