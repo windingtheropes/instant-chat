@@ -14,10 +14,23 @@
 
 <script>
   var socket = io();
+  
+  setInterval(function(){
+    const name = document.getElementById('name-box').value.trim()
+    window.localStorage.setItem('name', name)
+  }, 30000)
+
+  window.addEventListener('load', (event) => {
+    
+      const name = window.localStorage.getItem('name')
+      document.getElementById('name-box').value = name || ''
+     
+});
 
   function send() {
+
     const content = document.getElementById('message-box').value.trim()
-    const name = document.getElementById('name-box').value.trim()
+    const name = document.getElementById('name-box').value
 
     if (content === '' || content === null || content === undefined || name === '' || name === null || name === undefined) return
 
@@ -44,13 +57,19 @@
 
   })
 
+  socket.on('userCountUpdated', (c) => {
+    document.getElementById('usercount').innerText = `${c} user(s) online.`
+  })
+
   socket.on('reload', () => {
     location.reload()
   })
 </script>
-<p>Name: </p><input id="name-box" value="">
+<p>Name: <input type="text" id="name-box"></p>
 
-<div class="scroll" id="message-container">
+<p id="usercount">
+
+<div class="scroll" id="message-container">     
 
 </div>
 <p>Message: </p><input id="message-box" value="">
